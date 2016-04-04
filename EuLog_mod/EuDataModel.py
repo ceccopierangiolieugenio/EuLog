@@ -9,7 +9,7 @@ class EuDataModel(QAbstractTableModel):
 		self.regex = re.compile(regex)
 
 	def rowCount(self, parent): 
-		return self.fileb.GetLen()
+		return self.fileb.getLen()
  
 	def columnCount(self, parent): 
 		return len(self.cols) 
@@ -19,7 +19,7 @@ class EuDataModel(QAbstractTableModel):
 			return QVariant() 
 		elif role != Qt.DisplayRole: 
 			return QVariant() 
-		m = self.regex.match(self.fileb.GetLine(index.row()))
+		m = self.regex.match(self.fileb.getLine(index.row()))
 		if m:
 			return m.group(1+index.column())
 		else:
@@ -42,7 +42,7 @@ class EuDataModelSearch(EuDataModel):
 			return QVariant() 
 		elif role != Qt.DisplayRole: 
 			return QVariant() 
-		m = self.regex.match(self.fileb.GetLine(self.indexes[index.row()]))
+		m = self.regex.match(self.fileb.getLine(self.indexes[index.row()]))
 		if m:
 			return m.group(1+index.column())
 		else:

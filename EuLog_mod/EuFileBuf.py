@@ -5,7 +5,7 @@ class EuFileBuf:
 		self.filename = filename
 		self.indexes = []
 		print ("Open:  %s" % self.filename)
-		self.CreateIndex()
+		self.createIndex()
 		self.fd = open(self.filename,'r')
 		self.lastline = {'line':0, 'txt':self.fd.readline()}
 
@@ -13,11 +13,11 @@ class EuFileBuf:
 		print ("Close: %s" % self.filename)
 		self.fd.close()
 
-	def GetLen(self):
+	def getLen(self):
 		return len(self.indexes)
 
-	def GetLine(self, line):
-		if line >= self.GetLen():
+	def getLine(self, line):
+		if line >= self.getLen():
 			return ""
 		if self.lastline['line'] != line :
 			self.fd.seek(self.indexes[line])
@@ -25,7 +25,7 @@ class EuFileBuf:
 		return self.lastline['txt']
 
 
-	def CreateIndex(self):
+	def createIndex(self):
 		self.indexes = []
 		lines = 0
 		offset = 0
@@ -36,7 +36,7 @@ class EuFileBuf:
 				offset += len(line)
 		print("lines: %d" % lines)
 
-	def Search(self, regex):
+	def search(self, regex):
 		indexes = []
 		id = 0
 		rr = re.compile(regex)
