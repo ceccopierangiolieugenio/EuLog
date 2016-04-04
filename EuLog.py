@@ -8,14 +8,8 @@ from PyQt5.QtWidgets import QFileDialog
 
 from EuLog_mod import *
 
-#
-# TEST;0:17:06;COL1	COL2     COL3  c:COL4;LIN=0001A	RND=0.480630  Fill Fill Fill
-# xxxx;xxxxxxx;xxxx\txxxxxxx     xxxx  c:xxxx;....
-# ID   Time    COL1     COL2     COL3    COL4 TXT
-# tmp_regex = '([^;]*);([^;]*);([^\t]*)\t([^ ]*)     ([^ ]*)  c:([^;]*);(.*)'
-# tmp_cols = ["ID","Time","COL1","COL2","COL3","COL4","TXT"]
-
-qtCreatorFile = "ui/EuLog.main.ui"
+searchesFile  = 'var/searches.txt'
+qtCreatorFile = 'ui/EuLog.main.ui'
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
@@ -25,7 +19,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
 		self.config = EuConfig()
 		self.config.loadConfig("profiles/default.cfg")
-		# self.config.writeConfig("profiles/default.cfg")
 
 		QtWidgets.QMainWindow.__init__(self)
 		Ui_MainWindow.__init__(self)
@@ -41,6 +34,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 		# pprint (vars(self))
 
 	def __del__(self):
+		self.config.writeConfig("profiles/default.cfg")
 		self.saveSearches()
 
 	def exitClicked(self):
@@ -70,14 +64,14 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 			self.tableViewSearch.setColumnWidth(len(self.config.get('cols'))-1,800)
 
 	def initComboSearch(self):
-		if os.path.isfile('var/searches.txt') :
-			with open('var/searches.txt','r') as infile:
+		if os.path.isfile(searchesFile) :
+			with open(searchesFile,'r') as infile:
 				for line in infile:
 					self.searches.append(line.strip('\n'))
 					self.comboSearchEdit.insertItem(0,line.strip('\n'))
 
 	def saveSearches(self):
-		outfile = open('var/searches.txt','w')
+		outfile = open(searchesFile,'w')
 		# Save only the last 100 elements
 		for txt in self.searches[0:100]:
 			outfile.write(txt+'\n')
