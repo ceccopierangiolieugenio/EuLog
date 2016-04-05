@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import QFileDialog
 
 from EuLog_mod import *
 
-searchesFile  = 'var/searches.txt'
 qtCreatorFile = 'ui/EuLog.main.ui'
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
@@ -16,6 +15,7 @@ Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 	def __init__(self):
 		self.fileb = None
+		self.searchesFile  = os.path.join('var','searches.txt')
 
 		self.config = EuConfig()
 		self.config.loadConfig("profiles/default.cfg")
@@ -45,13 +45,20 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 			del self.fileb
 			self.fileb = None
 		filename = QFileDialog.getOpenFileName(self, "Open LogFile", ".", "Log Files (*.*)")
-		print(filename)
 		if filename[0]:
+			# Populate the main Table
 			self.fileb = EuFileBuf(filename[0]);
-			dataModel = EuDataModel(self.fileb, self.config.get('regex'), self.config.get('cols'))
-			self.tableView.setModel(dataModel)
+			self.dataModel = EuDataModel(self.fileb, self.config.get('regex'), self.config.get('cols'))
+			self.tableView.setModel(self.dataModel)
 			# Set Column width
 			self.tableView.setColumnWidth(len(self.config.get('cols'))-1,800)
+
+			# Initialize the search table
+			self.proxyModel = EuDataProxyModel()
+			self.proxyModel.setSourceModel(self.dataModel)
+			self.tableViewSearch.setModel(self.proxyModel)
+			# Set Column width
+			self.tableViewSearch.setColumnWidth(len(self.config.get('cols'))-1,800)
 
 	def searchPattern(self):
 		if self.fileb is not None :
@@ -59,22 +66,20 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 			self.searches.insert(0,regex)
 			self.comboSearchEdit.insertItem(0,regex)
 			indexes = self.fileb.search('.*'+regex)
-			dataModelSearch = EuDataModelSearch(self.fileb, self.config.get('regex'), self.config.get('cols'), indexes)
-			self.tableViewSearch.setModel(dataModelSearch)
-			self.tableViewSearch.setColumnWidth(len(self.config.get('cols'))-1,800)
+			self.proxyModel.euSetIndexes(indexes)
 
 	def initComboSearch(self):
-		if os.path.isfile(searchesFile) :
-			with open(searchesFile,'r') as infile:
+		if os.path.isfile(self.searchesFile) :
+			with open(self.searchesFile,'r') as infile:
 				for line in infile:
 					self.searches.append(line.strip('\n'))
 					self.comboSearchEdit.insertItem(0,line.strip('\n'))
 
 	def saveSearches(self):
-		outfile = open(searchesFile,'w')
 		# Save only the last 100 elements
-		for txt in self.searches[0:100]:
-			outfile.write(txt+'\n')
+		with open(self.searchesFile,'w') as outfile:
+			for txt in self.searches[0:100]:
+				outfile.write(txt+'\n')
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)

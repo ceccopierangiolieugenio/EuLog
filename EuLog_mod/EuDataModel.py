@@ -1,5 +1,5 @@
 import re
-from PyQt5.QtCore import Qt, QAbstractTableModel, QVariant
+from PyQt5.QtCore import Qt, QAbstractTableModel, QVariant, QSortFilterProxyModel
 
 class EuDataModel(QAbstractTableModel):
 	def __init__(self, fileb, regex, cols):
@@ -26,25 +26,26 @@ class EuDataModel(QAbstractTableModel):
 			return "Error"
 
 	def headerData(self, col, orientation, role):
+		# print("Col:%d, Or:%d, Display,%d"%(col, orientation, role))
+		if orientation == Qt.Vertical and role == Qt.DisplayRole:
+			return QVariant(col)
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return QVariant(self.cols[col])
 
-class EuDataModelSearch(EuDataModel):
-	def __init__(self, fileb, regex, cols, indexes):
-		EuDataModel.__init__(self, fileb, regex, cols)
-		self.indexes = indexes;
+class  EuDataProxyModel(QSortFilterProxyModel):
+	def __init__(self):
+		QSortFilterProxyModel.__init__(self)
+		self.indexes = []
+
+	def euSetIndexes(self, indexes):
+		self.indexes = indexes
+		self.invalidateFilter()
 
 	def rowCount(self, parent): 
 		return len(self.indexes)
- 
-	def data(self, index, role):
-		if not index.isValid(): 
-			return QVariant() 
-		elif role != Qt.DisplayRole: 
-			return QVariant() 
-		m = self.regex.match(self.fileb.getLine(self.indexes[index.row()]))
-		if m:
-			return m.group(1+index.column())
-		else:
-			return "Error"
+
+	def filterAcceptsRow(self, row, parent):
+		if row in self.indexes:
+			return True
+		return False
 

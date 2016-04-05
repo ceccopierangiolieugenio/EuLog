@@ -15,8 +15,6 @@ class EuConfig:
 		config.read(filename)
 		self.configuration['regex'] = config.get('Parser','regex')
 		self.configuration['cols']  = config.get('Parser','cols').split(';')
-		print self.configuration['regex']
-		print self.configuration['cols']
 		return
 		
 	def writeConfig(self, filename):
