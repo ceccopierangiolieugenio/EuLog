@@ -29,6 +29,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
 		self.actionOpen.triggered.connect(self.openFileClicked)
 		self.actionExit.triggered.connect(self.exitClicked)
+		self.actionPreferences.triggered.connect(self.preferencesClicked)
 		self.txtSearchButton.clicked.connect(self.searchPattern)
 		# self.comboSearchEdit.returnPressed.connect(self.searchPattern)
 		# pprint (vars(self))
@@ -39,6 +40,10 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
 	def exitClicked(self):
 		self.close()
+
+	def preferencesClicked(self):
+		d = EuConfigDialog(self.config)
+		d.exec_()
 
 	def openFileClicked(self):
 		if self.fileb is None:
