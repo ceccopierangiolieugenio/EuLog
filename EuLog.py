@@ -54,8 +54,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 			self.tableView.setColumnWidth(len(self.config.get('cols'))-1,800)
 
 			# Initialize the search table
-			self.proxyModel = EuDataProxyModel()
-			self.proxyModel.setSourceModel(self.dataModel)
+			self.proxyModel = EuDataProxyModel(self.fileb, self.config.get('regex'), self.config.get('cols'))
+			#self.proxyModel = EuDataProxyModel()
+			#self.proxyModel.setSourceModel(self.dataModel)
 			self.tableViewSearch.setModel(self.proxyModel)
 			# Set Column width
 			self.tableViewSearch.setColumnWidth(len(self.config.get('cols'))-1,800)
@@ -63,8 +64,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 	def searchPattern(self):
 		if self.fileb is not None :
 			regex = self.comboSearchEdit.currentText()
-			self.searches.insert(0,regex)
-			self.comboSearchEdit.insertItem(0,regex)
+			if regex not in self.searches:
+				self.searches.insert(0,regex)
+				self.comboSearchEdit.insertItem(0,regex)
 			indexes = self.fileb.search('.*'+regex)
 			self.proxyModel.euSetIndexes(indexes)
 

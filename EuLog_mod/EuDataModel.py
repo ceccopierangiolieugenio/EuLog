@@ -1,5 +1,6 @@
 import re
-from PyQt5.QtCore import Qt, QAbstractTableModel, QVariant, QSortFilterProxyModel
+from PyQt5.QtCore import Qt, QAbstractTableModel
+from PyQt5.QtCore import QModelIndex, QVariant
 
 class EuDataModel(QAbstractTableModel):
 	def __init__(self, fileb, regex, cols):
@@ -8,44 +9,54 @@ class EuDataModel(QAbstractTableModel):
 		self.cols = cols
 		self.regex = re.compile(regex)
 
-	def rowCount(self, parent): 
+	def rowCount(self, parent):
 		return self.fileb.getLen()
- 
-	def columnCount(self, parent): 
-		return len(self.cols) 
- 
-	def data(self, index, role): 
-		if not index.isValid(): 
-			return QVariant() 
-		elif role != Qt.DisplayRole: 
-			return QVariant() 
-		m = self.regex.match(self.fileb.getLine(index.row()))
+
+	def columnCount(self, parent):
+		return len(self.cols)
+
+	def data(self, index, role):
+		if not index.isValid():
+			return QVariant()
+		elif role != Qt.DisplayRole:
+			return QVariant()
+		return self.euGet(index.row(),index.column())
+
+	def euGet(self, row, col):
+		m = self.regex.match(self.fileb.getLine(row))
 		if m:
-			return m.group(1+index.column())
+			return m.group(1+col)
 		else:
 			return "Error"
 
 	def headerData(self, col, orientation, role):
-		# print("Col:%d, Or:%d, Display,%d"%(col, orientation, role))
 		if orientation == Qt.Vertical and role == Qt.DisplayRole:
 			return QVariant(col)
 		if orientation == Qt.Horizontal and role == Qt.DisplayRole:
 			return QVariant(self.cols[col])
 
-class  EuDataProxyModel(QSortFilterProxyModel):
-	def __init__(self):
-		QSortFilterProxyModel.__init__(self)
+class  EuDataProxyModel(EuDataModel):
+	def __init__(self, fileb, regex, cols):
+		EuDataModel.__init__(self, fileb, regex, cols)
 		self.indexes = []
 
 	def euSetIndexes(self, indexes):
+		self.beginResetModel()
 		self.indexes = indexes
-		self.invalidateFilter()
+		self.endResetModel()
 
-	def rowCount(self, parent): 
+	def rowCount(self, parent):
 		return len(self.indexes)
 
-	def filterAcceptsRow(self, row, parent):
-		if row in self.indexes:
-			return True
-		return False
+	def data(self, index, role):
+		if not index.isValid():
+			return QVariant()
+		elif role != Qt.DisplayRole:
+			return QVariant()
+		return self.euGet(self.indexes[index.row()],index.column())
+
+	def headerData(self, col, orientation, role):
+		if orientation == Qt.Vertical and role == Qt.DisplayRole:
+			return self.indexes[col];
+		return EuDataModel.headerData(self, col, orientation, role)
 
