@@ -1,78 +1,24 @@
 import sip, os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import Qt, QVariant
 from PyQt5.QtWidgets import *
 
+qtCreatorFile = 'ui/EuLog.Config.ui'
 
-class EuConfigDialog(QDialog):
+Ui_ConfigDiag, QtBaseClass = uic.loadUiType(qtCreatorFile)
+
+class EuConfigDialog(QDialog, Ui_ConfigDiag):
 	def __init__(self, config):
 		self.config = config
 		QDialog.__init__(self)
+		Ui_ConfigDiag.__init__(self)
+		self.setupUi(self)
 		self.setWindowModality(Qt.ApplicationModal)
 		self.initUI()
 		self.show()
 
 	def initUI(self):
-		self.setWindowTitle('Preferences')
-		self.resize(800,500)
-		self.verticalLayout = QtWidgets.QVBoxLayout(self)
-		self.verticalLayout.setObjectName("verticalLayout")
-		self.hLayProfile = QtWidgets.QHBoxLayout()
-		self.hLayProfile.setObjectName("hLayProfile")
-		self.label_4 = QtWidgets.QLabel(self)
-		self.label_4.setMaximumSize(QtCore.QSize(80, 16777215))
-		self.label_4.setObjectName("label_4")
-		self.label_4.setText("Profile")
-		self.hLayProfile.addWidget(self.label_4)
-		self.profilesComboBox = QtWidgets.QComboBox(self)
-		self.profilesComboBox.setObjectName("comboBox")
-		self.hLayProfile.addWidget(self.profilesComboBox)
-		self.verticalLayout.addLayout(self.hLayProfile)
-		self.hLayRegex = QtWidgets.QHBoxLayout()
-		self.hLayRegex.setObjectName("hLayRegex")
-		self.label = QtWidgets.QLabel(self)
-		self.label.setObjectName("label")
-		self.label.setText("Regex:")
-		self.hLayRegex.addWidget(self.label)
-		self.lineEditRegex = QtWidgets.QLineEdit(self)
-		self.lineEditRegex.setObjectName("lineEditRegex")
-		self.hLayRegex.addWidget(self.lineEditRegex)
-		self.verticalLayout.addLayout(self.hLayRegex)
-
-		self.hLayCtl = QtWidgets.QHBoxLayout()
-		self.hLayCtl.setObjectName("hLayCtl")
-		self.addColumnButton = QtWidgets.QPushButton(self)
-		self.addColumnButton.setObjectName("addColumnButton")
-		self.addColumnButton.setText("Add Column")
-		self.hLayCtl.addWidget(self.addColumnButton)
-		self.removeColumnButton = QtWidgets.QPushButton(self)
-		self.removeColumnButton.setObjectName("removeColumnButton")
-		self.removeColumnButton.setText("Remove Column")
-		self.hLayCtl.addWidget(self.removeColumnButton)
-		spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-		self.hLayCtl.addItem(spacerItem)
-		self.verticalLayout.addLayout(self.hLayCtl)
-
-		self.vLayCols = QtWidgets.QVBoxLayout()
-		self.verticalLayout.addLayout(self.vLayCols)
-
-		spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-		self.verticalLayout.addItem(spacerItem1)
-		self.hLayOkCancel = QtWidgets.QHBoxLayout()
-		self.hLayOkCancel.setObjectName("hLayOkCancel")
-		spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-		self.hLayOkCancel.addItem(spacerItem2)
-		self.okButton = QtWidgets.QPushButton(self)
-		self.okButton.setObjectName("okButton")
-		self.hLayOkCancel.addWidget(self.okButton)
-		self.cancelButton = QtWidgets.QPushButton(self)
-		self.cancelButton.setObjectName("cancelButton")
-		self.hLayOkCancel.addWidget(self.cancelButton)
-		self.verticalLayout.addLayout(self.hLayOkCancel)
-		self.okButton.setText("OK")
-		self.cancelButton.setText("Cancel")
-
 		# Add the default.cfg on top of the combo list also if it
 		# doesn't exists, I know it is stupid but I'm to tired now
 		# to look for a better solution
@@ -87,7 +33,6 @@ class EuConfigDialog(QDialog):
 		self.addColumnButton.clicked.connect(self.addColumn)
 		self.removeColumnButton.clicked.connect(self.removeColumn)
 		self.okButton.clicked.connect(self.saveAndClose)
-		self.cancelButton.clicked.connect(self.close)
 		self.profilesComboBox.currentIndexChanged.connect(self.profileChanged)
 
 		QtCore.QMetaObject.connectSlotsByName(self)

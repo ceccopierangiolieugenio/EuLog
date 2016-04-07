@@ -30,7 +30,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox"/>
+      <widget class="QComboBox" name="profilesComboBox"/>
      </item>
     </layout>
    </item>
@@ -44,7 +44,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="lineEditRegex"/>
      </item>
     </layout>
    </item>

@@ -6,9 +6,15 @@ class EuDataModel(QAbstractTableModel):
 	def __init__(self, fileb, config):
 		QAbstractTableModel.__init__(self)
 		self.fileb = fileb
-		self.cols = config.get('cols')
-		self.regex = re.compile(config.get('regex'))
-		self.default = config.get('default')
+		self.config = config
+		self.updateConfig()
+
+	def updateConfig(self):
+		self.beginResetModel()
+		self.cols = self.config.get('cols')
+		self.regex = re.compile(self.config.get('regex'))
+		self.default = self.config.get('default')
+		self.endResetModel()
 
 	def rowCount(self, parent):
 		return self.fileb.getLen()

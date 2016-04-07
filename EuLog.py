@@ -15,6 +15,8 @@ Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 	def __init__(self):
 		self.fileb = None
+		self.dataModel = None
+		self.proxyModel = None
 		self.searchesFile  = os.path.join('var','searches.txt')
 
 		self.config = EuConfig()
@@ -44,6 +46,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 	def preferencesClicked(self):
 		d = EuConfigDialog(self.config)
 		d.exec_()
+		if self.dataModel is not None:
+			self.dataModel.updateConfig()
+			self.proxyModel.updateConfig()
 
 	def openFileClicked(self):
 		if self.fileb is None:
