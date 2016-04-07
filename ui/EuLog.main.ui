@@ -41,6 +41,7 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionColors"/>
     <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -145,6 +146,11 @@
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionColors">
+   <property name="text">
+    <string>Colors</string>
    </property>
   </action>
  </widget>

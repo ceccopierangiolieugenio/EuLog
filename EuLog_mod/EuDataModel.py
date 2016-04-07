@@ -1,12 +1,14 @@
 import re
+from PyQt5.QtGui  import QColor, QBrush
 from PyQt5.QtCore import Qt, QAbstractTableModel
 from PyQt5.QtCore import QModelIndex, QVariant
 
 class EuDataModel(QAbstractTableModel):
-	def __init__(self, fileb, config):
+	def __init__(self, fileb, config, colors):
 		QAbstractTableModel.__init__(self)
 		self.fileb = fileb
 		self.config = config
+		self.c_conf = colors
 		self.updateConfig()
 
 	def updateConfig(self):
@@ -14,6 +16,7 @@ class EuDataModel(QAbstractTableModel):
 		self.cols = self.config.get('cols')
 		self.regex = re.compile(self.config.get('regex'))
 		self.default = self.config.get('default')
+		self.colors  = self.c_conf.get('colors')
 		self.endResetModel()
 
 	def rowCount(self, parent):
@@ -24,6 +27,13 @@ class EuDataModel(QAbstractTableModel):
 
 	def data(self, index, role):
 		if not index.isValid():
+			return QVariant()
+		elif role == Qt.BackgroundRole:
+			line = self.fileb.getLine(index.row())
+			for color in self.colors:
+				if color['enabled']:
+					m = re.search('.*'+color['regex'],line)
+					if m: return QBrush(QColor(color['color']))
 			return QVariant()
 		elif role != Qt.DisplayRole:
 			return QVariant()
@@ -45,8 +55,8 @@ class EuDataModel(QAbstractTableModel):
 			return QVariant(self.cols[col])
 
 class  EuDataProxyModel(EuDataModel):
-	def __init__(self, fileb, config):
-		EuDataModel.__init__(self, fileb, config)
+	def __init__(self, fileb, config, colors):
+		EuDataModel.__init__(self, fileb, config, colors)
 		self.indexes = []
 
 	def euSetIndexes(self, indexes):

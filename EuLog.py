@@ -22,6 +22,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.config = EuConfig()
 		self.config.loadConfig("profiles/default.cfg")
 
+		self.colors = EuColors()
+		self.colors.loadConfig("colors/default.cfg")
+
 		QtWidgets.QMainWindow.__init__(self)
 		Ui_MainWindow.__init__(self)
 		self.setupUi(self)
@@ -32,16 +35,25 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.actionOpen.triggered.connect(self.openFileClicked)
 		self.actionExit.triggered.connect(self.exitClicked)
 		self.actionPreferences.triggered.connect(self.preferencesClicked)
+		self.actionColors.triggered.connect(self.colorsClicked)
 		self.txtSearchButton.clicked.connect(self.searchPattern)
 		# self.comboSearchEdit.returnPressed.connect(self.searchPattern)
 		# pprint (vars(self))
 
 	def __del__(self):
 		self.config.writeConfig("profiles/default.cfg")
+		self.colors.writeConfig("colors/default.cfg")
 		self.saveSearches()
 
 	def exitClicked(self):
 		self.close()
+
+	def colorsClicked(self):
+		d = EuColorsDialog(self.colors)
+		d.exec_()
+		if self.dataModel is not None:
+			self.dataModel.updateConfig()
+			self.proxyModel.updateConfig()
 
 	def preferencesClicked(self):
 		d = EuConfigDialog(self.config)
@@ -58,13 +70,13 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 		if filename[0]:
 			# Populate the main Table
 			self.fileb = EuFileBuf(filename[0]);
-			self.dataModel = EuDataModel(self.fileb, self.config)
+			self.dataModel = EuDataModel(self.fileb, self.config, self.colors)
 			self.tableView.setModel(self.dataModel)
 			# Set Column width
 			self.tableView.setColumnWidth(len(self.config.get('cols'))-1,800)
 
 			# Initialize the search table
-			self.proxyModel = EuDataProxyModel(self.fileb, self.config)
+			self.proxyModel = EuDataProxyModel(self.fileb, self.config, self.colors)
 			#self.proxyModel = EuDataProxyModel()
 			#self.proxyModel.setSourceModel(self.dataModel)
 			self.tableViewSearch.setModel(self.proxyModel)
