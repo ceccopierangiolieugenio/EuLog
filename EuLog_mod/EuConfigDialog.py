@@ -94,6 +94,13 @@ class EuConfigDialog(QDialog):
 
 	def saveAndClose(self):
 		profile = self.profilesComboBox.currentText()
+		self.config.set('regex',self.lineEditRegex.text())
+		cols = []
+		for key, col in enumerate(self.c_hLayCol):
+			cols.append(col.colName.text())
+			if col.radioDef.isChecked():
+				self.config.set('default', key)
+		self.config.set('cols',cols)
 		self.config.writeConfig(os.path.join('profiles','default.cfg'))
 		self.config.writeConfig(os.path.join('profiles',profile))
 		self.close()
@@ -131,11 +138,6 @@ class EuConfigDialog(QDialog):
 		if True:
 			hLayCol         = QtWidgets.QHBoxLayout()
 			hLayCol.setObjectName("hLayCol_"+str(id))
-			#removeColButton = QtWidgets.QPushButton(self)
-			#removeColButton.setObjectName("removeColButton_"+str(id))
-			#removeColButton.setText("X")
-			#removeColButton.setMaximumSize(QtCore.QSize(32, 16777215))
-			#hLayCol.addWidget(removeColButton)
 			labelCol        = QtWidgets.QLabel(self)
 			labelCol.setObjectName("labelCol_"+str(id))
 			hLayCol.addWidget(labelCol)
@@ -145,9 +147,15 @@ class EuConfigDialog(QDialog):
 			hLayCol.addWidget(colName)
 			radioDef        = QtWidgets.QRadioButton(self)
 			radioDef.setObjectName("radioDef_"+str(id))
+			if self.config.get('default')==id:
+				radioDef.setChecked(True)
+			else:
+				radioDef.setChecked(False)
 			hLayCol.addWidget(radioDef)
 			labelCol.setText("Col "+str(id)+" :")
 			radioDef.setText("Def")
 			self.vLayCols.addLayout(hLayCol)
 
+			hLayCol.colName  = colName
+			hLayCol.radioDef = radioDef
 			self.c_hLayCol.append(hLayCol)

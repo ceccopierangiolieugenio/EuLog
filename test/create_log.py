@@ -17,4 +17,7 @@ with open(filename, 'a') as out:
 		seconds = 1000 + i
 		m, s = divmod(seconds, 60)
 		h, m = divmod(m, 60)
-		out.write( "TEST;%d:%02d:%02d;COL1\tCOL2     COL3  c:COL4;LIN=%05X\tRND=%f %s\n" % (h, m, s, i, random.random(), " Fill" * random.randint(1,20)) )
+		if (random.random() < 0.9):
+			out.write( "TEST;%d:%02d:%02d;COL1\tCOL2     COL3  c:COL4;LIN=%05X\tRND=%f %s\n" % (h, m, s, i, random.random(), " Fill" * random.randint(1,20)) )
+		else:
+			out.write( "TEST;%d:%02d:%02d;COL1 --- (BROKEN LINE) --- LIN=%05X\tRND=%f %s\n" % (h, m, s, i, random.random(), " Fill" * random.randint(1,20)) )

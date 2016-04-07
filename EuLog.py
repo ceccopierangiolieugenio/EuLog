@@ -53,13 +53,13 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
 		if filename[0]:
 			# Populate the main Table
 			self.fileb = EuFileBuf(filename[0]);
-			self.dataModel = EuDataModel(self.fileb, self.config.get('regex'), self.config.get('cols'))
+			self.dataModel = EuDataModel(self.fileb, self.config)
 			self.tableView.setModel(self.dataModel)
 			# Set Column width
 			self.tableView.setColumnWidth(len(self.config.get('cols'))-1,800)
 
 			# Initialize the search table
-			self.proxyModel = EuDataProxyModel(self.fileb, self.config.get('regex'), self.config.get('cols'))
+			self.proxyModel = EuDataProxyModel(self.fileb, self.config)
 			#self.proxyModel = EuDataProxyModel()
 			#self.proxyModel.setSourceModel(self.dataModel)
 			self.tableViewSearch.setModel(self.proxyModel)

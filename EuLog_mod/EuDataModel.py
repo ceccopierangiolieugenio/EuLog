@@ -3,11 +3,12 @@ from PyQt5.QtCore import Qt, QAbstractTableModel
 from PyQt5.QtCore import QModelIndex, QVariant
 
 class EuDataModel(QAbstractTableModel):
-	def __init__(self, fileb, regex, cols):
+	def __init__(self, fileb, config):
 		QAbstractTableModel.__init__(self)
 		self.fileb = fileb
-		self.cols = cols
-		self.regex = re.compile(regex)
+		self.cols = config.get('cols')
+		self.regex = re.compile(config.get('regex'))
+		self.default = config.get('default')
 
 	def rowCount(self, parent):
 		return self.fileb.getLen()
@@ -23,11 +24,13 @@ class EuDataModel(QAbstractTableModel):
 		return self.euGet(index.row(),index.column())
 
 	def euGet(self, row, col):
-		m = self.regex.match(self.fileb.getLine(row))
+		line = self.fileb.getLine(row)
+		m = self.regex.match(line)
 		if m:
 			return m.group(1+col)
-		else:
-			return "Error"
+		if self.default==col:
+			return line
+		return ""
 
 	def headerData(self, col, orientation, role):
 		if orientation == Qt.Vertical and role == Qt.DisplayRole:
@@ -36,8 +39,8 @@ class EuDataModel(QAbstractTableModel):
 			return QVariant(self.cols[col])
 
 class  EuDataProxyModel(EuDataModel):
-	def __init__(self, fileb, regex, cols):
-		EuDataModel.__init__(self, fileb, regex, cols)
+	def __init__(self, fileb, config):
+		EuDataModel.__init__(self, fileb, config)
 		self.indexes = []
 
 	def euSetIndexes(self, indexes):
