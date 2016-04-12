@@ -34,3 +34,17 @@ Inside the testing folder the '''create_log.py''' script can be used to generate
 
 ##### Usage
         create_log.py <FILENAME> <LINES>
+
+## Build Windows standalone executable
+
+#### Environment
+(This procedure is based on Python 2.7, py2exe[0.6.9])
+* Install [Python 2.7](https://www.python.org/)
+* Install [py2exe](https://sourceforge.net/projects/py2exe/files/py2exe/0.6.9/)
+* From the cmd prompt, type:
+
+        c:\Python27\python.exe -m pip install python-qt5
+* Run **build.win.bat**
+
+The **dist** folder will contain the executable and all the required files
+        
