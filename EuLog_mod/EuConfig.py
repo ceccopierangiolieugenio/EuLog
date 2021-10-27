@@ -1,4 +1,9 @@
-import ConfigParser
+import sys
+
+if sys.version_info.major == 3:
+    import configparser as cp
+else:
+    import ConfigParser as cp
 
 class EuConfig:
 	def __init__(self):
@@ -15,7 +20,7 @@ class EuConfig:
 		self.configuration[key] = value
 
 	def loadConfig(self, filename):
-		config = ConfigParser.RawConfigParser()
+		config = cp.RawConfigParser()
 		config.read(filename)
 		self.configuration['regex']   = config.get('Parser','regex')
 		self.configuration['cols']    = config.get('Parser','cols').split(';')
@@ -23,7 +28,7 @@ class EuConfig:
 		return
 
 	def writeConfig(self, filename):
-		config = ConfigParser.RawConfigParser()
+		config = cp.RawConfigParser()
 
 		config.add_section('Parser')
 		config.set('Parser', 'regex', self.configuration['regex'])
